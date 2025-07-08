@@ -1,0 +1,118 @@
+specification {
+    element chargePoint
+    element centralSystem
+    element component
+    element actor {
+        style {
+            shape person
+        }
+    }
+    element browser {
+        style {
+            shape browser
+        }
+    }
+    element car
+    tag custStartTrans
+    tag boot
+}
+model {
+    car car1 { 
+        #custStartTrans
+        title "Car 1"
+    }
+
+    chargePoint cp1 {
+        #custStartTrans #boot
+        title "Charge Point 1"
+    }
+    centralSystem cs {
+        #custStartTrans #boot
+        title "Central System"
+        component cpws {
+            #custStartTrans #boot
+            title "Charge Point WebSocket Server"
+        }
+        component mq {      
+            #custStartTrans
+            title "MQ Server"
+        }
+        component csApi {
+            #custStartTrans
+            title "Central System API"
+        }
+        component custApi {
+            #custStartTrans
+            title "Customer API"
+        }
+        component staffApi {
+            title "Staff API"
+        }
+    }
+    actor customer {
+        #custStartTrans
+        title "Customer"
+    }
+    actor staff {
+         title "Staff"
+    }
+    browser custBrowser {
+        #custStartTrans
+        title "Customer Browser"
+    }
+    browser staffBrowser {
+        title "Staff Browser"
+    }    
+
+    customer -> custBrowser 'start charge' {
+        #custStartTrans
+    }
+    custBrowser -> cs.custApi 'start charge' {
+        #custStartTrans
+    }
+    cs.custApi -> cs.csApi 'start charge' {
+        #custStartTrans
+    }
+    cs.csApi -> cs.mq 'start charge' {
+        #custStartTrans
+    } 
+    cs.mq -> cs.cpws 'start charge' {
+        #custStartTrans
+    }
+    cs.cpws -> cp1 'start transaction' {
+        #custStartTrans
+    }
+    cp1 -> car1 'start charge' {
+        #custStartTrans
+    }
+    cp1 -> cs.cpws 'accept transaction' {
+        #custStartTrans
+    }
+
+    cp1 -> cs.cpws 'boot notification' {
+        #boot
+    }
+    cs.cpws -> cp1 'boot notification response' {
+        #boot
+    }
+}
+views {
+  view custInitiatedStartTransaction {
+    title "Customer Initiated Start Transaction"
+    include * -> *
+    where tag = #custStartTrans
+    include cs
+    autoLayout LeftRight
+  }  
+  /**
+   * @likec4-generated(v1)
+   * iKRoYXNo2SgzNTQ3ZjQ2ZDBhMjA1MzYyMGQ0NzYzNDY0Mzg3NGM0MzNmNWUzY2I3qmF1dG9MYXlvdXSBqWRpcmVjdGlvbqJUQqF4CKF50f5lpXdpZHRozQJ0pmhlaWdodM0CrKVub2Rlc4OjY3AxgqFilGLR/mXNAUDMtKFjwqJjc4KhYpQICM0BgM0BCaFjw6djcy5jcHdzgqFilCg9zQFAzLShY8KlZWRnZXOCpzF4MzI4Z3iDomNwkYKheM0B+KF5zJehbISheM0By6F5E6V3aWR0aGamaGVpZ2h0EqFwlJLNAnzMl5LNAirMl5LNAcbMl5LNAXLMl6ZlcGd6eGSDomNwkYKheM0B7KF5zJehbISheM0Bv6F5D6V3aWR0aMykpmhlaWdodBKhcJSSzQFozJeSzQG6zJeSzQIezJeSzQJyzJc=
+   */
+  view boot {
+    title "Boot Notification"
+    include * -> *
+    where tag = #boot
+    include cs    
+
+  }
+}
