@@ -2,14 +2,14 @@
 import asyncio
 import pika
 import threading
-import logging
-from datetime import datetime, timezone
 import websockets
 #https://codemia.io/knowledge-hub/path/consuming_rabbitmq_queue_from_inside_python_threads
 #https://websockets.readthedocs.io/en/stable/intro/examples.html
 #https://medium.com/@AlexanderObregon/building-real-time-applications-with-python-and-websockets-eb33a4098e02
+import config
+cfg = config.get_env_config()
 connected_clients = set()
-async def handle_client(websocket):
+async def handle_websocket_client(websocket):
     print("handle client")
     connected_clients.add(websocket)
     try:
@@ -29,18 +29,18 @@ def queue_callback(ch, method, properties, body):
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 def consume_queue():
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(cfg.queue.host))
     channel = connection.channel()
 
-    channel.queue_declare(queue='task_queue', durable=True)
-    channel.basic_consume(queue='task_queue', on_message_callback=queue_callback, auto_ack=False)
+    channel.queue_declare(queue=cfg.queue.queue_name, durable=cfg.queue.durable)
+    channel.basic_consume(queue=cfg.queue.queue_name, on_message_callback=queue_callback, auto_ack=cfg.queue.auto_ack)
 
     print('start consuming from queue')
     channel.start_consuming()
 
 async def start_websocket():
     print("Starting websocket")
-    server = await websockets.serve(handle_client, 'localhost', 9000)
+    server = await websockets.serve(handle_websocket_client, cfg.websocket.host, cfg.websocket.port)
     print("awaiting websocket server")
     await server.wait_closed()
     print("websocket server closed")

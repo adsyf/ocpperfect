@@ -1,0 +1,8 @@
+test:
+  queue:
+    host: 'test-queue-host'
+  websocket:
+    host: 'test-websocket-host'
+dev:
+  queue: {}
+  websocket: {}
