@@ -19,7 +19,7 @@ dev:
   websocket: {}
 """
     os.environ["ENV"] = "test"
-    env_config = config.get_config(my_yaml)
+    env_config = config.get_env_config(my_yaml)
     print(env_config)
     assert env_config.queue.host == "test-queue-host"
 
@@ -36,5 +36,5 @@ def test_conf_get_ws_url():
       websocket: {}
     """
     os.environ["ENV"] = "test"
-    env_config = config.get_config(my_yaml)
+    env_config = config.get_env_config(my_yaml)
     assert env_config.websocket.get_url() == "ws://test-websocket-host:9000"
