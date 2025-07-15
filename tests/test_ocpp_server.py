@@ -1,12 +1,16 @@
-from ocpperfect import ocpp_server as ocpp_server
-from ocpperfect import config as config
+import os
+from ocpperfect import ocpp_server, config
 from websockets.sync.client import connect
-from ocpperfect import config as config
-cfg = config.get_env_config()
-
+import pytest
+#@pytest.mark.skip(reason="not running")
 def test_starts():
-    ocpp_server.main()
-    websocket = connect(cfg.websocket.get_url())
+    os.environ["ENV"] = "dev"
+    env_config = config.get_env_config()
+    print("try start ocpp server")
+    server = ocpp_server.OCPPServer()
+    server.start_ocpp_server()
+    print("started ocpp server")
+    websocket = connect(env_config.websocket.get_url())
     assert websocket is not None
 
 

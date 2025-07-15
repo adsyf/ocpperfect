@@ -42,6 +42,7 @@ def get_env_config(non_file_yaml = None):
     return EnvConfig(**env_config_dict)
 
 
+
 if __name__ == "__main__":
     my_yaml = """
 test:
