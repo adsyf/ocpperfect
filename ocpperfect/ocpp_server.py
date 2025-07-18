@@ -37,7 +37,17 @@ class OCPPServer(object):
         self.queue_thread = None
         self.websocket_thread = None
         self.cfg = get_env_config()
+        self.ws_async_queue = asyncio.Queue()
         print(self.cfg)
+
+    async def broadcast(self, excl_ws):
+        print("broadcast to all, except message initiator")
+        while True:
+            for client in connected_clients:
+                timestamp, msg = await self.ws_async_queue.get()
+                if client != excl_ws:
+                    await client.send(msg)
+
 
     async def handle_websocket_client(self,websocket):
         print("handle client")
@@ -45,10 +55,10 @@ class OCPPServer(object):
         try:
             async for message in websocket:
                 print("received message from websocket client " + message)
-                await websocket.send("got your message buddy i.e. " + message)
-                for client in connected_clients:
-                    if client != websocket:
-                        await client.send(message)
+                response = "got your message i.e. " + message
+                #send to just connected client
+                await websocket.send("got your message i.e. " + message)
+                await self.ws_async_queue.put(response)
         except websockets.exceptions.ConnectionClosed:
             pass
         finally:
@@ -79,11 +89,11 @@ class OCPPServer(object):
         asyncio.run(self.start_websocket_server())
 
     def start_ocpp_server(self):
-        print("about to define queue thread")
-        self.queue_thread = threading.Thread(target=self.consume_queue)
-        print("queue_thread defined")
-        self.queue_thread.start()
-        print("queue_thread started")
+        #print("about to define queue thread")
+        #self.queue_thread = threading.Thread(target=self.consume_queue)
+        #print("queue_thread defined")
+        #self.queue_thread.start()
+        #print("queue_thread started")
         #websocket_thread = threading.Thread(target=self.non_async_start_websocket_server)
         self.websocket_thread = threading.Thread(target=asyncio.run,args=[self.start_websocket_server()],daemon=True)
 

@@ -6,6 +6,8 @@ python queue_client.py queue_message_1
 python websocket_client_just_listening.py
 ## this is for manual testing  
 python websocket_client
+$env:PYTHONPATH="D:\OCPPerfect\ocpperfect\"
+
 
 ## testing docs
 https://realpython.com/python-testing/#automated-vs-manual-testing
