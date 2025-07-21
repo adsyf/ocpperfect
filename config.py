@@ -19,6 +19,8 @@ class QueueConfig(BaseModel):
 class WebsocketConfig(BaseModel):
     host: str = "localhost"
     port: int = 9000
+    echo_path: str = "echo"
+    websocket_path: str = "websocket"
     def get_url(self):
         return f"ws://{self.host}:{self.port}"
 
