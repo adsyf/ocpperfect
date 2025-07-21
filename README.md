@@ -8,6 +8,9 @@ python websocket_client_just_listening.py
 python websocket_client
 $env:PYTHONPATH="D:\OCPPerfect\ocpperfect\"
 
+python -m pytest -s .\test_websocket.py
+
+
 
 ## testing docs
 https://realpython.com/python-testing/#automated-vs-manual-testing
