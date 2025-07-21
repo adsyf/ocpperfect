@@ -50,7 +50,7 @@ class WebSocketServer:
         await self.stop()
         logging.info(f"server stopped after {initial_exception}")
 
-    async def start_with_catch(self):
+    async def start_with_catch_forever(self):
         await self.start()
         try:
             await asyncio.Future()
@@ -67,7 +67,5 @@ class WebSocketServer:
 
 if __name__ == "__main__":
     server = WebSocketServer()
-    asyncio.run(server.start_with_catch())
-
-
+    asyncio.run(server.start_with_catch_forever())
 
